@@ -3,12 +3,58 @@
     Written by haydenki, 2019-09-18
 */
 
-#include <stdio.h>
+/* This script takes any valid stream of hex data from
+a ROM file and 'disassebles' or translates it back to
+assembler code for the 8080 processor */
 
+/* 
+    ALGORITHM FOR DISASSEBLING 8080 CODE:
+    1. Read the code into a buffer
+    2. Get a pointer to the beginning of the buffer
+    3. Use the byte at the pointer to determine the opcode
+    4. Print out the name of the opcote using the bytes after
+    the opcode as data, if applicable.
+    5. Advance the pointer the number of bytes used by that 
+    instruction (1, 2, or 3 bytes)
+    6. If not at the end of the buffer, go to step 3
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* *codebuffer is a pointer to the 8080 assembly code,
+int pc is the current offset into the code
+function returns the number of bytes of the op*/
 int disassemble(unsigned char *codebuffer, int pc);
 
-int main(void)
+int main(int argc, char**argv)
 {
+    /* Attempt to open ROM file */
+    FILE *rom = fopen(argv[1], "rb");
+    if (rom == NULL)
+    {
+	printf("error: Couldn't open %s\n", argv[1]);
+    }
+
+    /* Get the file size */
+    fseek(rom, 0L, SEEK_END);
+    int rom_size = ftell(rom);
+    fseek(rom, 0L, SEEK_SET);
+
+    /* Create a buffer for the ROM contents, write the contents of the file 
+    to the buffer, then close the ROM file */
+    unsigned char *buffer=malloc(rom_size);
+    fread(buffer, rom_size, 1, rom);
+    fclose(rom);
+
+    /* Keep repeating the algorithm until end of buffer is reached */
+    int program_counter = 0;
+
+    while (program_counter < rom_size)
+    {
+	program_counter += disassemble(buffer, program_counter);
+    }
+    
     return 0;
 }
 
@@ -17,7 +63,7 @@ int disassemble(unsigned char *codebuffer, int pc)
     unsigned char *code = &codebuffer[pc];
     int opbytes = 1;
     printf("%04x ", pc);
-    /* Determine and print the opcode for each hex instruction*/
+    /* Determine then print the opcode of the given byte */
     switch (*code)
     {
         case 0x00: printf("NOP"); break;
