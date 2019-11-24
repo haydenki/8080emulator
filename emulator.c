@@ -37,6 +37,15 @@ typedef struct State8080
 void UnimplementedInstruction(State8080* state);
 int Emulate80800p(State8080* state);
 int parity(int x, int size);
+void LogicFlagsA(State8080 *state);
+
+void LogicFlagsA(State8080 *state)
+{
+	state->cc.cy = state->cc.ac = 0;
+	state->cc.z = (state->a == 0);
+	state->cc.s = (0x80 == (state->a & 0x80));
+	state->cc.p = parity(state->a, 8);
+}
 
 int main()
 {
