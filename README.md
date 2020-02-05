@@ -1,7 +1,7 @@
 # 8080emulator
-An emulator for the Intel 8080 processor written in C
 
-This project is currently in progress, nothing yet will
-happen if you try to download/compile.
+UPDATE: after a 2 months, I've finally started working on this again :D
 
-Note: 2019/12/10, taking break on development of this for a while, will come back soon.
+The emulator works now! However, I have not implemented graphics, sound, or input yet. So when you run you'll only see the CPU flags/registers and opcodes. 
+
+Also, I've only implemented the opcodes that Space invaders uses (yet). So you'll need to find a space invaders rom somewhere on the internet (it's easy to find).
